@@ -1,5 +1,6 @@
 package com.ggboy.framework.utils.httputil;
 
+import com.ggboy.framework.common.constant.SystemConstant;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -46,7 +47,7 @@ public abstract class SimpleHttpClientAbstract<T> {
 
         Request(String url, Charset charset) {
             this.uriBuilder = new URIBuilder(URI.create(url));
-            this.charset = charset == null ? StandardCharsets.UTF_8 : charset;
+            this.charset = charset == null ? SystemConstant.system_charset : charset;
         }
 
         public Request addUrlParams(String name, String value) {

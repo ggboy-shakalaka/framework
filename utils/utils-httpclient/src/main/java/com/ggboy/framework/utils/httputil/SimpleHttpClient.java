@@ -16,12 +16,12 @@ public class SimpleHttpClient extends SimpleHttpClientAbstract<String> {
     }
 
     @Override
-    public boolean beforeRequest(HttpRequestBase request) {
+    boolean beforeRequest(HttpRequestBase request) {
         return true;
     }
 
     @Override
-    public String afterRequest(HttpResponse response) throws IOException {
+    String afterRequest(HttpResponse response) throws IOException {
         return response == null ? null : EntityUtils.toString(response.getEntity());
     }
 }

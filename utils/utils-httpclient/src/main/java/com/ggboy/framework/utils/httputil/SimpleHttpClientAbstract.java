@@ -28,9 +28,9 @@ public abstract class SimpleHttpClientAbstract<T> {
         this.httpClient = httpClient;
     }
 
-    protected abstract boolean beforeRequest(HttpRequestBase request);
+    abstract boolean beforeRequest(HttpRequestBase request);
 
-    protected abstract T afterRequest(HttpResponse response) throws IOException;
+    abstract T afterRequest(HttpResponse response) throws IOException;
 
     public Request startRequest(String url, Charset charset) {
         return new Request(url, charset);

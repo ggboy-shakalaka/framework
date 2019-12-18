@@ -6,6 +6,7 @@ import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
+import java.util.List;
 
 public class SimpleHttpClient extends SimpleHttpClientAbstract<String> {
 

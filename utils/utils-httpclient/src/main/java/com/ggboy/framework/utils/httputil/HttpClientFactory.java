@@ -13,7 +13,6 @@ public class HttpClientFactory {
     public static HttpClient createHttpClient(int maxTotal, int defaultMaxPerRoute, int connectTimeout, int connectionRequestTimeout, int socketTimeout) {
         PoolingHttpClientConnectionManager manager = new PoolingHttpClientConnectionManager();
         manager.setMaxTotal(maxTotal);
-        manager.setDefaultMaxPerRoute(defaultMaxPerRoute);
 
         RequestConfig requestConfig = RequestConfig.custom()
                 .setConnectTimeout(connectTimeout)

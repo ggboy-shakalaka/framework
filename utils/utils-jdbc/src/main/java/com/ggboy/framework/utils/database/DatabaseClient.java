@@ -80,7 +80,7 @@ public class DatabaseClient {
     }
 
     private static Map<String, Object> getLine(ResultSet rs) throws SQLException {
-        var md = rs.getMetaData();
+        ResultSetMetaData md = rs.getMetaData();
 
         Map<String, Object> line = new HashMap<>();
         for (int i = md.getColumnCount(); i > 0; --i)
@@ -96,9 +96,9 @@ public class DatabaseClient {
     }
 
     private static List<String> getColumns(ResultSet rs) throws SQLException {
-        var md = rs.getMetaData();
+        ResultSetMetaData md = rs.getMetaData();
 
-        var keys = new LinkedList<String>();
+        LinkedList<String> keys = new LinkedList<>();
         for (int i = md.getColumnCount(); i > 0; --i)
             keys.addFirst(md.getColumnName(i));
         return keys;

@@ -13,6 +13,7 @@
         <module>common</module>
         <module>utils</module>
         <module>demo</module>
+        <module>sso</module>
     </modules>
 
     <build>

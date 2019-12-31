@@ -5,6 +5,7 @@ import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.utils.URIBuilder;
@@ -74,6 +75,13 @@ public abstract class SimpleHttpClientAbstract<T> {
             httpPost.setHeaders(headers == null ? null : headers.toArray(new Header[0]));
             httpPost.setEntity(entity);
             return request(httpPost);
+        }
+
+        public T doGet() throws IOException {
+            HttpGet httpGet = new HttpGet();
+            httpGet.setURI(URI.create(uriBuilder.toString()));
+            httpGet.setHeaders(headers == null ? null : headers.toArray(new Header[0]));
+            return request(httpGet);
         }
 
         private T request(HttpRequestBase request) throws IOException {

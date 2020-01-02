@@ -15,7 +15,7 @@ public class WebConfig {
         filterRegistrationBean.addInitParameter(SsoFilter.Conf.SERVER_PATH, server);
         filterRegistrationBean.addInitParameter(SsoFilter.Conf.IGNORE_PATH, "/api");
         filterRegistrationBean.addUrlPatterns("/*");
-        filterRegistrationBean.setEnabled(true);
+        filterRegistrationBean.setEnabled(false);
         return filterRegistrationBean;
     }
 }

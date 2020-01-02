@@ -1,11 +1,12 @@
 package cn.zhaizq.sso.sdk;
 
+import cn.zhaizq.sso.sdk.domain.SsoConfig;
 import com.ggboy.framework.utils.httputil.StringSimpleHttp;
+import org.apache.http.entity.SerializableEntity;
 
 import java.io.IOException;
 
 public class SsoService {
-    public final static StringSimpleHttp client = StringSimpleHttp.defaultClient;
     public final static long timeout = 1000L * 60 * 10;
 
     public String server;
@@ -49,12 +50,15 @@ public class SsoService {
     }
 
     private void doFlush() throws IOException {
-        serverPath = client.startRequest(server + "/api/config/serverPath").addUrlParams("appId", appId).doGet();
-        loginPath = client.startRequest(server + "/api/config/loginPath").addUrlParams("appId", appId).doGet();
-        logoutPath = client.startRequest(server + "/api/config/logoutPath").addUrlParams("appId", appId).doGet();
+        serverPath = StringSimpleHttp.startDefaultRequest(server + "/api/config/serverPath").addUrlParams("appId", appId).doGet();
+        loginPath = StringSimpleHttp.startDefaultRequest(server + "/api/config/loginPath").addUrlParams("appId", appId).doGet();
+        logoutPath = StringSimpleHttp.startDefaultRequest(server + "/api/config/logoutPath").addUrlParams("appId", appId).doGet();
     }
 
-    public void action() throws IOException {
-        client.startRequest("").doPost(StringSimpleHttp.buildJsonEntity(""));
+    public static void main(String[] args) throws IOException {
+        SsoConfig ssoConfig = new SsoConfig();
+//        ssoConfig.serverPath = "haha";
+        String s = StringSimpleHttp.startDefaultRequest("http://localhost:8080/api/auth/test2").doPost(new SerializableEntity(ssoConfig));
+        System.out.println(s);
     }
 }

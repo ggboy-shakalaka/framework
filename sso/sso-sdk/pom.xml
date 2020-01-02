@@ -26,6 +26,11 @@
             <version>3.1.0</version>
         </dependency>
         <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+            <version>1.2.62</version>
+        </dependency>
+        <dependency>
             <groupId>cn.zhaizq.framework</groupId>
             <artifactId>utils-httpclient</artifactId>
             <version>1.0-SNAPSHOT</version>

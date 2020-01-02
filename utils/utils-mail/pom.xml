@@ -6,7 +6,7 @@
     <packaging>jar</packaging>
 
     <parent>
-        <groupId>com.ggboy.framework</groupId>
+        <groupId>cn.zhaizq.framework</groupId>
         <artifactId>utils</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>

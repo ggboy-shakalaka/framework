@@ -1,6 +1,5 @@
 package com.ggboy.framework.utils.httputil;
 
-import com.ggboy.framework.common.constant.SystemConstant;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -9,22 +8,23 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.utils.URIBuilder;
-import org.apache.http.entity.ContentType;
-import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicHeader;
 
 import java.io.IOException;
 import java.net.URI;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class SimpleHttpClientAbstract<T> {
+public abstract class SimpleHttpAbstract<T> {
     private final HttpClient httpClient;
 
-    protected SimpleHttpClientAbstract(HttpClient httpClient) {
+    protected SimpleHttpAbstract() {
+        this(HttpClientFactory.defaultHttpClient());
+    }
+
+    protected SimpleHttpAbstract(HttpClient httpClient) {
         if (httpClient == null)
-            throw new RuntimeException("HttpClient can not be null");
+            throw new IllegalArgumentException("HttpClient can not be null");
         this.httpClient = httpClient;
     }
 
@@ -32,22 +32,16 @@ public abstract class SimpleHttpClientAbstract<T> {
 
     abstract T afterRequest(HttpResponse response) throws IOException;
 
-    public Request startRequest(String url, Charset charset) {
-        return new Request(url, charset);
-    }
-
     public Request startRequest(String url) {
-        return startRequest(url, null);
+        return new Request(url);
     }
 
     public class Request {
-        private Charset charset;
         private URIBuilder uriBuilder;
         private List<Header> headers;
 
-        Request(String url, Charset charset) {
+        Request(String url) {
             this.uriBuilder = new URIBuilder(URI.create(url));
-            this.charset = charset == null ? SystemConstant.system_charset : charset;
         }
 
         public Request addUrlParams(String name, String value) {
@@ -59,14 +53,6 @@ public abstract class SimpleHttpClientAbstract<T> {
             headers = headers == null ? new ArrayList<>() : headers;
             headers.add(new BasicHeader(name, value));
             return this;
-        }
-
-        public T postJson(String json) throws IOException {
-            return doPost(new StringEntity(json, ContentType.APPLICATION_JSON.withCharset(charset)));
-        }
-
-        public T postXml(String xml) throws IOException {
-            return doPost(new StringEntity(xml, ContentType.APPLICATION_XML.withCharset(charset)));
         }
 
         public T doPost(HttpEntity entity) throws IOException {

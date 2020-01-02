@@ -1,11 +1,11 @@
 package cn.zhaizq.sso.sdk;
 
-import com.ggboy.framework.utils.httputil.SimpleHttpClient;
+import com.ggboy.framework.utils.httputil.StringSimpleHttp;
 
 import java.io.IOException;
 
 public class SsoService {
-    public final static SimpleHttpClient client = SimpleHttpClient.defaultClient;
+    public final static StringSimpleHttp client = StringSimpleHttp.defaultClient;
     public final static long timeout = 1000L * 60 * 10;
 
     public String server;
@@ -52,5 +52,9 @@ public class SsoService {
         serverPath = client.startRequest(server + "/api/config/serverPath").addUrlParams("appId", appId).doGet();
         loginPath = client.startRequest(server + "/api/config/loginPath").addUrlParams("appId", appId).doGet();
         logoutPath = client.startRequest(server + "/api/config/logoutPath").addUrlParams("appId", appId).doGet();
+    }
+
+    public void action() throws IOException {
+        client.startRequest("").doPost(StringSimpleHttp.buildJsonEntity(""));
     }
 }

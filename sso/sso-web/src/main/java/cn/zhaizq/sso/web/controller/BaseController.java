@@ -42,7 +42,6 @@ public class BaseController {
 
     @RequestMapping("/test")
     public String test() {
-        System.out.println("asd");
         return "index.html";
     }
 }

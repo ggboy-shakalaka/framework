@@ -57,4 +57,15 @@ public class ApiController {
         }
         response.sendRedirect(new URIBuilder(URI.create(request.getParameter("source"))).addParameter(SsoFilter.Conf.TOKEN_NAME, token).toString());
     }
+
+    @GetMapping("/getJs")
+    public String a(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        request.getCookies();
+        response.addCookie(new Cookie(SsoFilter.Conf.TOKEN_NAME, "12345"));
+        return "document.cookie=\"sso.token=12345\";alert('hello');";
+    }
+    @GetMapping("/b")
+    public String b(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        return null;
+    }
 }

@@ -1,9 +1,15 @@
 package cn.zhaizq.sso.sdk;
 
+import cn.zhaizq.sso.sdk.domain.response.SsoCheckResult;
+import org.apache.http.client.utils.URIBuilder;
+
 import javax.servlet.*;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 public class SsoFilter implements Filter {
     private String appId;
@@ -33,6 +39,13 @@ public class SsoFilter implements Filter {
         HttpServletResponse response = (HttpServletResponse) servletResponse;
 
         String requestUri = request.getRequestURI();
+        String token = SsoHelper.getSsoToken(request);
+
+        String token2 = request.getParameter("sso.token");
+        if (token2 != null) {
+            token = token2;
+            response.addCookie(new Cookie("sso.token", token));
+        }
 
         if (SsoHelper.isMatch(login, requestUri)) {
             response.sendRedirect(ssoService.getLoginPath());
@@ -51,12 +64,26 @@ public class SsoFilter implements Filter {
             }
         }
 
-        String requestedSessionId = request.getRequestedSessionId();
-        System.out.println(request.getRequestURI());
-        System.out.println(requestedSessionId);
-//
-//        response.sendRedirect(server + logout);
-//        Cookie[] cookies = request.getCookies();
+        if (token == null) {
+            URIBuilder redirect = new URIBuilder(URI.create(ssoService.getTokenPath()))
+                        .addParameter("source", request.getRequestURL().toString())
+                        .addParameter("appId", appId);
+            response.sendRedirect(redirect.toString());
+            return;
+        }
+
+        SsoCheckResult ssoCheckResult = ssoService.checkToken(token);
+
+        if (ssoCheckResult.getStatus() != SsoCheckResult.Status._1) {
+            URIBuilder redirect = new URIBuilder(URI.create(ssoService.getLoginPath()))
+                    .addParameter("source", request.getRequestURL().toString())
+                    .addParameter("appId", appId);
+            response.sendRedirect(redirect.toString());
+            return;
+        }
+
+        servletRequest.setAttribute("ssoUser", ssoCheckResult.getSsoUser());
+
         filterChain.doFilter(servletRequest, servletResponse);
     }
 
@@ -69,5 +96,7 @@ public class SsoFilter implements Filter {
         public final static String LOGIN_PATH = "LOGIN_PATH";
         public final static String LOGOUT_PATH = "LOGOUT_PATH";
         public final static String IGNORE_PATH = "IGNORE_PATH";
+
+        public final static String TOKEN_NAME = "sso.token";
     }
 }

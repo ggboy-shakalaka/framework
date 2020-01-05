@@ -1,8 +1,9 @@
 package cn.zhaizq.sso.sdk;
 
-import cn.zhaizq.sso.sdk.domain.SsoConfig;
-import com.ggboy.framework.utils.httputil.StringSimpleHttp;
-import org.apache.http.entity.SerializableEntity;
+import cn.zhaizq.sso.sdk.domain.request.QueryConfig;
+import cn.zhaizq.sso.sdk.domain.request.SsoCheckToken;
+import cn.zhaizq.sso.sdk.domain.response.SsoCheckResult;
+import cn.zhaizq.sso.sdk.domain.response.SsoConfig;
 
 import java.io.IOException;
 
@@ -11,54 +12,40 @@ public class SsoService {
 
     public String server;
     public String appId;
-
-    public long time;
-
-    public String serverPath;
-    public String loginPath;
-    public String logoutPath;
+    public SsoApi ssoApi;
 
     public SsoService(String server, String appId) {
         this.server = server;
         this.appId = appId;
-        try {
-            flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        ssoApi = new SsoApi(server);
     }
 
-    public String getServerPath() {
-        return serverPath;
+    public String getServerPath() throws IOException {
+        return getSsoConfig().getServerPath();
     }
 
-    public String getLoginPath() {
-        return loginPath;
+    public String getLoginPath() throws IOException {
+        return getSsoConfig().getLoginPath();
     }
 
-    public String getLogoutPath() {
-        return logoutPath;
+    public String getLogoutPath() throws IOException {
+        return getSsoConfig().getLogoutPath();
     }
 
-    private boolean isTimeout() {
-        return System.currentTimeMillis() - time > timeout;
+    public String getTokenPath() throws IOException {
+        return getSsoConfig().getTokenPath();
     }
 
-    private void flush() throws IOException {
-        // todo 超时判断 并发处理
-        doFlush();
+    public SsoCheckResult checkToken(String token) throws IOException {
+        SsoCheckToken checkToken = new SsoCheckToken();
+        checkToken.setAppId(appId);
+        checkToken.setToken(token);
+        return ssoApi.checkToken(checkToken);
     }
 
-    private void doFlush() throws IOException {
-        serverPath = StringSimpleHttp.startDefaultRequest(server + "/api/config/serverPath").addUrlParams("appId", appId).doGet();
-        loginPath = StringSimpleHttp.startDefaultRequest(server + "/api/config/loginPath").addUrlParams("appId", appId).doGet();
-        logoutPath = StringSimpleHttp.startDefaultRequest(server + "/api/config/logoutPath").addUrlParams("appId", appId).doGet();
-    }
-
-    public static void main(String[] args) throws IOException {
-        SsoConfig ssoConfig = new SsoConfig();
-//        ssoConfig.serverPath = "haha";
-        String s = StringSimpleHttp.startDefaultRequest("http://localhost:8080/api/auth/test2").doPost(new SerializableEntity(ssoConfig));
-        System.out.println(s);
+    public SsoConfig getSsoConfig() throws IOException {
+        QueryConfig queryConfig = new QueryConfig();
+        queryConfig.setAppId(appId);
+        return ssoApi.queryConfig(queryConfig);
     }
 }

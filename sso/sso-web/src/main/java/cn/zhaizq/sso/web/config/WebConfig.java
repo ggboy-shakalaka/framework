@@ -7,15 +7,16 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class WebConfig {
-    private String server = "https://sso.zhaizq.cn";
+    private String server = "http://localhost";
     @Bean
     public FilterRegistrationBean ssoFilter() {
         FilterRegistrationBean<SsoFilter> filterRegistrationBean = new FilterRegistrationBean<SsoFilter>();
         filterRegistrationBean.setFilter(new SsoFilter());
         filterRegistrationBean.addInitParameter(SsoFilter.Conf.SERVER_PATH, server);
-        filterRegistrationBean.addInitParameter(SsoFilter.Conf.IGNORE_PATH, "/api");
+        filterRegistrationBean.addInitParameter(SsoFilter.Conf.APP_ID, "zhaizq.appid");
+        filterRegistrationBean.addInitParameter(SsoFilter.Conf.IGNORE_PATH, "/api,/,/favicon.ico,/test");
         filterRegistrationBean.addUrlPatterns("/*");
-        filterRegistrationBean.setEnabled(false);
+        filterRegistrationBean.setEnabled(true);
         return filterRegistrationBean;
     }
 }

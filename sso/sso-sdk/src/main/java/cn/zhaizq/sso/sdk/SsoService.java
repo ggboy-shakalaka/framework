@@ -37,6 +37,12 @@ public class SsoService {
     }
 
     public SsoCheckResult checkToken(String token) throws IOException {
+        if (token == null || token.length() == 0) {
+            SsoCheckResult ssoCheckResult = new SsoCheckResult();
+            ssoCheckResult.setStatus(SsoCheckResult.Status._UNKNOWN);
+            return ssoCheckResult;
+        }
+
         SsoCheckToken checkToken = new SsoCheckToken();
         checkToken.setAppId(appId);
         checkToken.setToken(token);

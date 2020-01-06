@@ -14,9 +14,16 @@ public class SsoCheckResult {
         _1("通过"),
         _2("权限不足"),
         _3("登录状态过期"),
+        _UNKNOWN("未知TOKEN"),
         ;
 
+        private String remark;
         Status(String remark){
+            this.remark = remark;
+        }
+
+        public String getRemark() {
+            return remark;
         }
     }
 }

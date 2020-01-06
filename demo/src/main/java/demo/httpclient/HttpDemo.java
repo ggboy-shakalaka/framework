@@ -1,4 +1,4 @@
-package httpclient;
+package demo.httpclient;
 
 import com.ggboy.framework.common.constant.SystemConstant;
 import com.ggboy.framework.utils.httputil.HttpClientFactory;
@@ -8,13 +8,12 @@ import java.io.IOException;
 
 public class HttpDemo {
     public static void main(String[] args) throws IOException {
-        StringSimpleHttp httpClient = new StringSimpleHttp(HttpClientFactory.defaultHttpClient());
-        String responseStr = httpClient.startRequest("http://baidu.com", SystemConstant.system_charset)
+        String responseStr = StringSimpleHttp.startDefaultRequest("http://baidu.com")
                 .addUrlParams("a", "1")
                 .addUrlParams("b", "2")
                 .addHeader("c", "3")
                 .addHeader("d", "4")
-                .postJson("{'e':'5'}");
+                .doPost(StringSimpleHttp.buildJsonEntity("{'e':'5'}"));
         System.out.println(responseStr);
     }
 }

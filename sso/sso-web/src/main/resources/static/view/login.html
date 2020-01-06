@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<form>
+    <input type="text" name="name" />
+    <br/>
+    <br/>
+    <input type="password" name="password" />
+    <br/>
+    <br/>
+    <button type="button">Login</button>
+</form>
+<script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+<script>
+    $(function() {
+        $("button").click(function() {
+            let params = $("form").serializeObject(); //将表单序列化为JSON对象
+            $.ajax({
+                url: '/api/doLogin',
+                method: 'post',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify(params),
+                dataType: "json",
+                success: function(result) {
+                    console.log(result);
+                }
+            });
+        });
+    });
+
+    $.fn.serializeObject = function() {
+        var o = {};
+        var a = this.serializeArray();
+        $.each(a, function() {
+            if (o[this.name]) {
+                if (!o[this.name].push) {
+                    o[this.name] = [ o[this.name] ];
+                }
+                o[this.name].push(this.value || '');
+            } else {
+                o[this.name] = this.value || '';
+            }
+        });
+        return o;
+    }
+</script>
+</body>
+</html>

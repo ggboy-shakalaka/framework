@@ -14,13 +14,13 @@ public class SsoHelper {
         return path.equals(pattern) || path.startsWith(pattern + "/");
     }
 
-    public static String getSsoToken(HttpServletRequest request) {
+    public static Cookie getSsoToken(HttpServletRequest request) {
         if (request.getCookies() == null)
             return null;
 
         for (Cookie cookie : request.getCookies()) {
             if (SsoFilter.Conf.TOKEN_NAME.equals(cookie.getName())) {
-                return cookie.getValue();
+                return cookie;
             }
         }
 

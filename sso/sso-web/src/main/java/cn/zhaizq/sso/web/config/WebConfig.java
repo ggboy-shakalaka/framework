@@ -14,7 +14,7 @@ public class WebConfig {
         filterRegistrationBean.setFilter(new SsoFilter());
         filterRegistrationBean.addInitParameter(SsoFilter.Conf.SERVER_PATH, server);
         filterRegistrationBean.addInitParameter(SsoFilter.Conf.APP_ID, "zhaizq.appid");
-        filterRegistrationBean.addInitParameter(SsoFilter.Conf.IGNORE_PATH, "/api,/,/favicon.ico,/test");
+        filterRegistrationBean.addInitParameter(SsoFilter.Conf.IGNORE_PATH, "/login.html,/api,/favicon.ico");
         filterRegistrationBean.addUrlPatterns("/*");
         filterRegistrationBean.setEnabled(true);
         return filterRegistrationBean;

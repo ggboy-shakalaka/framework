@@ -39,13 +39,7 @@ public class SsoFilter implements Filter {
         HttpServletResponse response = (HttpServletResponse) servletResponse;
 
         String requestUri = request.getRequestURI();
-        String token = SsoHelper.getSsoToken(request);
-
-        String token2 = request.getParameter("sso.token");
-        if (token2 != null) {
-            token = token2;
-            response.addCookie(new Cookie("sso.token", token));
-        }
+        Cookie token = SsoHelper.getSsoToken(request);
 
         if (SsoHelper.isMatch(login, requestUri)) {
             response.sendRedirect(ssoService.getLoginPath());
@@ -64,22 +58,28 @@ public class SsoFilter implements Filter {
             }
         }
 
+        SsoCheckResult ssoCheckResult = ssoService.checkToken(token == null ? null : token.getValue());
+
         if (token == null) {
-            URIBuilder redirect = new URIBuilder(URI.create(ssoService.getTokenPath()))
-                        .addParameter("source", request.getRequestURL().toString())
-                        .addParameter("appId", appId);
-            response.sendRedirect(redirect.toString());
+            // 可能会在放置token之前重定向
+            response.getOutputStream().println("<meta charset='UTF-8'>");
+            response.getOutputStream().println(String.format("<script src='%s'></script>", ssoService.getTokenPath()));
             return;
         }
 
-        SsoCheckResult ssoCheckResult = ssoService.checkToken(token);
 
         if (ssoCheckResult.getStatus() != SsoCheckResult.Status._1) {
-            URIBuilder redirect = new URIBuilder(URI.create(ssoService.getLoginPath()))
-                    .addParameter("source", request.getRequestURL().toString())
-                    .addParameter("appId", appId);
-            response.sendRedirect(redirect.toString());
+             response.sendRedirect(
+                     new URIBuilder(URI.create(ssoService.getLoginPath()))
+                             .addParameter("redirect", request.getRequestURL().toString())
+                             .addParameter("message", ssoCheckResult.getStatus().getRemark()).toString()
+             );
             return;
+        }
+
+        if (!token.isHttpOnly()) {
+            token.setHttpOnly(true);
+            response.addCookie(token);
         }
 
         servletRequest.setAttribute("ssoUser", ssoCheckResult.getSsoUser());

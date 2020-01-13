@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -32,9 +33,9 @@ public class ApiController {
     public SsoConfig query_config(@RequestBody QueryConfig queryConfig) {
         SsoConfig config = new SsoConfig();
         config.setServerPath("http://sso.zhaizq.cn");
-        config.setLoginPath("http://sso.zhaizq.cn/login.html");
-        config.setLogoutPath("http://sso.zhaizq.cn/logout.html");
-        config.setTokenPath("http://sso.zhaizq.cn/api/sso.refresh.token.js");
+        config.setLoginPath("http://sso.zhaizq.cn/" + queryConfig.getAppId() + "/login.html");
+        config.setLogoutPath("http://sso.zhaizq.cn/" + queryConfig.getAppId() + "/logout.html");
+        config.setTokenPath("http://sso.zhaizq.cn/" + queryConfig.getAppId() + "/refresh");
         return config;
     }
 
@@ -67,25 +68,6 @@ public class ApiController {
         }
 
         return "{\"code\":\"FAIL\"}";
-    }
-
-    @GetMapping(value = "/sso.refresh.token.js", produces="text/javascript")
-    public String token() {
-        System.out.println(request.getRequestURL());
-        String ssoToken = getRequestCookie(SsoFilter.Conf.TOKEN_NAME);
-        return "document.cookie = '" + SsoFilter.Conf.TOKEN_NAME + "=" + (ssoToken == null ? "" : ssoToken) + "; expires=' + new Date(new Date().getTime() + (24 * 60 * 60 * 1000)).toUTCString() + '; path=/';\n" +
-                "location.reload()";
-    }
-
-    private String getRequestCookie(String name) {
-        if (request.getCookies() == null)
-            return null;
-
-        for (Cookie cookie : request.getCookies())
-            if (name.equals(cookie.getName()))
-                return cookie.getValue();
-
-        return null;
     }
 }
 

@@ -5,6 +5,6 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class QueryConfig {
-    private String appId;
+public class SsoLogoutRequest {
+    private String ssoToken;
 }

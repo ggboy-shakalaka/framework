@@ -1,20 +1,28 @@
 package cn.zhaizq.sso.web.config;
 
+import cn.zhaizq.sso.sdk.SsoConstant;
 import cn.zhaizq.sso.sdk.SsoFilter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class WebConfig {
-    private String server = "http://localhost";
+    @Value("${sso.server}")
+    private String server;
+    @Value("${sso.appId}")
+    private String appId;
+    @Value("${sso.ignore}")
+    private String ignore;
+
     @Bean
-    public FilterRegistrationBean ssoFilter() {
-        FilterRegistrationBean<SsoFilter> filterRegistrationBean = new FilterRegistrationBean<SsoFilter>();
+    public FilterRegistrationBean<SsoFilter> ssoFilter() {
+        FilterRegistrationBean<SsoFilter> filterRegistrationBean = new FilterRegistrationBean<>();
         filterRegistrationBean.setFilter(new SsoFilter());
-        filterRegistrationBean.addInitParameter(SsoFilter.Conf.SERVER_PATH, server);
-        filterRegistrationBean.addInitParameter(SsoFilter.Conf.APP_ID, "zhaizq.appid");
-        filterRegistrationBean.addInitParameter(SsoFilter.Conf.IGNORE_PATH, "/login.html,/api,/favicon.ico");
+        filterRegistrationBean.addInitParameter(SsoConstant.SERVER_PATH, server);
+        filterRegistrationBean.addInitParameter(SsoConstant.APP_ID, appId);
+        filterRegistrationBean.addInitParameter(SsoConstant.IGNORE_PATH, ignore);
         filterRegistrationBean.addUrlPatterns("/*");
         filterRegistrationBean.setEnabled(true);
         return filterRegistrationBean;

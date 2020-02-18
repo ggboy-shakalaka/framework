@@ -5,7 +5,6 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class SsoCheckToken {
-    private String appId;
+public class SsoCheckTokenRequest {
     private String token;
 }

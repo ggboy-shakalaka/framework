@@ -1,6 +1,6 @@
 package cn.zhaizq.sso.sdk;
 
-import cn.zhaizq.sso.sdk.domain.response.SsoCheckResult;
+import cn.zhaizq.sso.sdk.domain.response.SsoCheckTokenResponse;
 import org.apache.http.client.utils.URIBuilder;
 
 import javax.servlet.*;
@@ -9,26 +9,21 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 
 public class SsoFilter implements Filter {
-    private String appId;
-    private String server;
-    private String login;
-    private String logout;
     private String ignore;
 
     private SsoService ssoService;
 
     public void init(FilterConfig filterConfig) throws ServletException {
-        appId = filterConfig.getInitParameter(Conf.APP_ID);
-        server = filterConfig.getInitParameter(Conf.SERVER_PATH);
-        login = filterConfig.getInitParameter(Conf.LOGIN_PATH);
-        logout = filterConfig.getInitParameter(Conf.LOGOUT_PATH);
-        ignore = filterConfig.getInitParameter(Conf.IGNORE_PATH);
+        String appId = filterConfig.getInitParameter(SsoConstant.APP_ID);
+        String server = filterConfig.getInitParameter(SsoConstant.SERVER_PATH);
+//        login = filterConfig.getInitParameter(Conf.LOGIN_PATH);
+//        logout = filterConfig.getInitParameter(Conf.LOGOUT_PATH);
+        ignore = filterConfig.getInitParameter(SsoConstant.IGNORE_PATH);
 
-        login = login == null || login.length() == 0 ? "/login" : login;
-        logout = logout == null || logout.length() == 0 ? "/logout" : logout;
+//        login = login == null || login.length() == 0 ? "/login" : login;
+//        logout = logout == null || logout.length() == 0 ? "/logout" : logout;
         ignore = ignore == null ? "" : ignore;
 
         ssoService = new SsoService(server, appId);
@@ -41,15 +36,15 @@ public class SsoFilter implements Filter {
         String requestUri = request.getRequestURI();
         Cookie token = SsoHelper.getSsoToken(request);
 
-        if (SsoHelper.isMatch(login, requestUri)) {
-            response.sendRedirect(ssoService.getLoginPath());
-            return;
-        }
-
-        if (SsoHelper.isMatch(logout, requestUri)) {
-            response.sendRedirect(ssoService.getLogoutPath());
-            return;
-        }
+//        if (SsoHelper.isMatch(login, requestUri)) {
+//            response.sendRedirect(ssoService.getLoginPath());
+//            return;
+//        }
+//
+//        if (SsoHelper.isMatch(logout, requestUri)) {
+//            response.sendRedirect(ssoService.getLogoutPath());
+//            return;
+//        }
 
         for (String ignoreUrl : ignore.split(",")) {
             if (SsoHelper.isMatch(ignoreUrl, requestUri)) {
@@ -58,45 +53,24 @@ public class SsoFilter implements Filter {
             }
         }
 
-        SsoCheckResult ssoCheckResult = ssoService.checkToken(token == null ? null : token.getValue());
-
-        if (token == null) {
-            // 可能会在放置token之前重定向
-            response.getOutputStream().println("<meta charset='UTF-8'>");
-            response.getOutputStream().println(String.format("<script src='%s'></script>", ssoService.getTokenPath()));
+        if (request.getParameter(SsoConstant.TOKEN_NAME) != null) {
+            SsoHelper.setSsoToken(response, request.getParameter(SsoConstant.TOKEN_NAME));
+            response.sendRedirect(request.getParameter(SsoConstant.REDIRECT) == null ? "/" : request.getParameter(SsoConstant.REDIRECT));
             return;
         }
 
+        SsoCheckTokenResponse resp = ssoService.checkToken(token == null ? null : token.getValue());
 
-        if (ssoCheckResult.getStatus() != SsoCheckResult.Status._1) {
-             response.sendRedirect(
-                     new URIBuilder(URI.create(ssoService.getLoginPath()))
-                             .addParameter("redirect", request.getRequestURL().toString())
-                             .addParameter("message", ssoCheckResult.getStatus().getRemark()).toString()
-             );
+        if (!"200".equalsIgnoreCase(resp.getCode())) {
+            response.sendRedirect(ssoService.getRefreshTokenPath(SsoHelper.getRootPath(request), null));
             return;
         }
 
-        if (!token.isHttpOnly()) {
-            token.setHttpOnly(true);
-            response.addCookie(token);
-        }
-
-        servletRequest.setAttribute("ssoUser", ssoCheckResult.getSsoUser());
+        request.setAttribute(SsoConstant.SSO_USER, resp.getData());
 
         filterChain.doFilter(servletRequest, servletResponse);
     }
 
     public void destroy() {
-    }
-
-    public static class Conf {
-        public final static String APP_ID = "APP_ID";
-        public final static String SERVER_PATH = "SERVER_PATH";
-        public final static String LOGIN_PATH = "LOGIN_PATH";
-        public final static String LOGOUT_PATH = "LOGOUT_PATH";
-        public final static String IGNORE_PATH = "IGNORE_PATH";
-
-        public final static String TOKEN_NAME = "sso.token";
     }
 }

@@ -29,6 +29,8 @@ public class StringSimpleHttp extends SimpleHttpAbstract<String> {
     }
 
     public static HttpEntity buildJsonEntity(String json) {
+        if (json == null)
+            return null;
         return new StringEntity(json, ContentType.APPLICATION_JSON.withCharset(SystemConstant.system_charset));
     }
 

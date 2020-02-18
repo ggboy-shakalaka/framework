@@ -6,6 +6,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class SsoUser {
-    private String id;
-    private String name;
+    private String id = "999";
+    private String name = "zhaizq";
 }

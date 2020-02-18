@@ -1,57 +1,51 @@
 package cn.zhaizq.sso.sdk;
 
-import cn.zhaizq.sso.sdk.domain.request.QueryConfig;
-import cn.zhaizq.sso.sdk.domain.request.SsoCheckToken;
-import cn.zhaizq.sso.sdk.domain.response.SsoCheckResult;
-import cn.zhaizq.sso.sdk.domain.response.SsoConfig;
+import cn.zhaizq.sso.sdk.domain.request.SsoLoginRequest;
+import cn.zhaizq.sso.sdk.domain.request.SsoQueryConfigRequest;
+import cn.zhaizq.sso.sdk.domain.request.SsoCheckTokenRequest;
+import cn.zhaizq.sso.sdk.domain.response.SsoLoginResponse;
+import cn.zhaizq.sso.sdk.domain.response.SsoCheckTokenResponse;
+import cn.zhaizq.sso.sdk.domain.response.SsoLogoutResponse;
+import cn.zhaizq.sso.sdk.domain.response.SsoQueryConfigResponse;
+import org.apache.http.client.utils.URIBuilder;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.net.URI;
 
 public class SsoService {
-    public final static long timeout = 1000L * 60 * 10;
-
-    public String server;
-    public String appId;
     public SsoApi ssoApi;
 
     public SsoService(String server, String appId) {
-        this.server = server;
-        this.appId = appId;
-        ssoApi = new SsoApi(server);
+        this.ssoApi = new SsoApi(server, appId);
     }
 
-    public String getServerPath() throws IOException {
-        return getSsoConfig().getServerPath();
+    public String getRefreshTokenPath(String redirect, String login_url) {
+        String path = ssoApi.getSsoConfig().getServerPath() + ssoApi.getSsoConfig().getRefreshTokenPath();
+        URIBuilder uri = new URIBuilder(URI.create(path));
+        uri.addParameter(SsoConstant.REDIRECT, redirect);
+        uri.addParameter(SsoConstant.LOGIN_URL, login_url);
+        return uri.toString();
     }
 
-    public String getLoginPath() throws IOException {
-        return getSsoConfig().getLoginPath();
-    }
-
-    public String getLogoutPath() throws IOException {
-        return getSsoConfig().getLogoutPath();
-    }
-
-    public String getTokenPath() throws IOException {
-        return getSsoConfig().getTokenPath();
-    }
-
-    public SsoCheckResult checkToken(String token) throws IOException {
-        if (token == null || token.length() == 0) {
-            SsoCheckResult ssoCheckResult = new SsoCheckResult();
-            ssoCheckResult.setStatus(SsoCheckResult.Status._UNKNOWN);
-            return ssoCheckResult;
+    public SsoCheckTokenResponse checkToken(String token) throws IOException {
+        SsoCheckTokenResponse response = new SsoCheckTokenResponse();
+        if (token == null) {
+            response.setCode("400");
+            return response;
         }
 
-        SsoCheckToken checkToken = new SsoCheckToken();
-        checkToken.setAppId(appId);
-        checkToken.setToken(token);
-        return ssoApi.checkToken(checkToken);
+        return ssoApi.checkToken(token);
     }
 
-    public SsoConfig getSsoConfig() throws IOException {
-        QueryConfig queryConfig = new QueryConfig();
-        queryConfig.setAppId(appId);
-        return ssoApi.queryConfig(queryConfig);
+    public SsoLoginResponse login(String name, String pwd) throws IOException {
+        SsoLoginRequest req = new SsoLoginRequest();
+        req.setName(name);
+        req.setPassword(pwd);
+        return ssoApi.login(req);
+    }
+
+    public SsoLogoutResponse logout(String token) throws IOException {
+        return ssoApi.logout(token);
     }
 }

@@ -6,27 +6,27 @@
     <packaging>jar</packaging>
 
     <parent>
-        <groupId>cn.zhaizq.framework</groupId>
-        <artifactId>parent</artifactId>
+        <groupId>cn.zhaizq</groupId>
+        <artifactId>framework</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>demo</artifactId>
+    <artifactId>framework-demo</artifactId>
 
     <dependencies>
         <dependency>
-            <groupId>cn.zhaizq.framework</groupId>
-            <artifactId>common</artifactId>
+            <groupId>cn.zhaizq</groupId>
+            <artifactId>framework-common</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>cn.zhaizq.framework</groupId>
-            <artifactId>utils-httpclient</artifactId>
+            <groupId>cn.zhaizq</groupId>
+            <artifactId>framework-utils-httpclient</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>cn.zhaizq.framework</groupId>
-            <artifactId>utils-mail</artifactId>
+            <groupId>cn.zhaizq</groupId>
+            <artifactId>framework-utils-mail</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
     </dependencies>

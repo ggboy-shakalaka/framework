@@ -14,10 +14,10 @@
     <artifactId>framework-utils</artifactId>
 
     <modules>
-        <module>framework-utils-httpclient</module>
-        <module>framework-utils-common</module>
-        <module>framework-utils-jdbc</module>
-        <module>framework-utils-mail</module>
+        <module>utils-httpclient</module>
+        <module>utils-common</module>
+        <module>utils-jdbc</module>
+        <module>utils-mail</module>
     </modules>
 
     <dependencies>

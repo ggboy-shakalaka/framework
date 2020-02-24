@@ -80,7 +80,7 @@ public class BaseRsaUtil {
             cipher.init(mode, key);
             int inputLen = data.length;
             int offSet = 0;
-            byte[] cache = null;
+            byte[] cache;
             int i = 0;
             while (inputLen - offSet > 0) {
                 if (inputLen - offSet > block) {

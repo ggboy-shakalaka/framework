@@ -34,12 +34,14 @@ public class StringRsaUtil {
     }
 
     public static String decryptByPublicKey(String data, String key) throws InvalidKeySpecException, NoSuchAlgorithmException, IllegalBlockSizeException, InvalidKeyException, BadPaddingException, NoSuchPaddingException, IOException {
-        byte[] bytes = BaseRsaUtil.decryptByPublicKey(data.getBytes(), Base64.getDecoder().decode(key));
-        return Base64.getEncoder().encodeToString(bytes);    }
+        byte[] bytes = BaseRsaUtil.decryptByPublicKey(Base64.getDecoder().decode(data), Base64.getDecoder().decode(key));
+        return new String(bytes);
+    }
 
     public static String decryptByPrivateKey(String data, String key) throws InvalidKeySpecException, NoSuchAlgorithmException, IllegalBlockSizeException, InvalidKeyException, BadPaddingException, NoSuchPaddingException, IOException {
-        byte[] bytes = BaseRsaUtil.decryptByPrivateKey(data.getBytes(), Base64.getDecoder().decode(key));
-        return Base64.getEncoder().encodeToString(bytes);    }
+        byte[] bytes = BaseRsaUtil.decryptByPrivateKey(Base64.getDecoder().decode(data), Base64.getDecoder().decode(key));
+        return new String(bytes);
+    }
 
     public static StringRsaUtil.Keys genKeyPair() throws NoSuchAlgorithmException {
         BaseRsaUtil.Keys keys = BaseRsaUtil.genKeyPair();

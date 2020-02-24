@@ -1,6 +1,7 @@
 package demo.rsa;
 
 import com.ggboy.framework.utils.common.BaseRsaUtil;
+import com.ggboy.framework.utils.common.StringRsaUtil;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
@@ -12,12 +13,11 @@ import java.security.spec.InvalidKeySpecException;
 
 public class Demo {
     public static void main(String[] args) throws NoSuchAlgorithmException, BadPaddingException, IllegalBlockSizeException, IOException, NoSuchPaddingException, InvalidKeyException, InvalidKeySpecException {
-        String str = "zhaizq";
-        BaseRsaUtil.Keys keys = BaseRsaUtil.genKeyPair();
-        byte[] bytes = BaseRsaUtil.encryptByPublicKey(str.getBytes(), keys.getPublicKey());
+        StringRsaUtil.Keys keys = StringRsaUtil.genKeyPair();
+        System.out.println(keys);
 
-        byte[] bytes1 = BaseRsaUtil.decryptByPrivateKey(bytes, keys.getPrivateKey());
-
-        System.out.println(new String(bytes1));
+        String s = StringRsaUtil.encryptByPublicKey("zhaizq 中文!", keys.getPublicKey());
+        String s1 = StringRsaUtil.decryptByPrivateKey(s, keys.getPrivateKey());
+        System.out.println(s1);
     }
 }

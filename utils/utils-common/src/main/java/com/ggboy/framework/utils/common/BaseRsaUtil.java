@@ -1,6 +1,5 @@
 package com.ggboy.framework.utils.common;
 
-import com.ggboy.framework.utils.exception.RSAException;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -14,7 +13,6 @@ import java.security.*;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
-import java.util.Base64;
 
 /**
  * @author RSA签名,加解密处理核心文件,注意:密钥长度1024
@@ -75,12 +73,6 @@ public class BaseRsaUtil {
 
     /**
      * 密文算法
-     *
-     * @param data
-     * @param key
-     * @param mode
-     * @return byte[]
-     * @throws RSAException
      */
     private static byte[] rsaAlgorithm(byte[] data, Key key, int mode, int block) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException, IOException {
         try(ByteArrayOutputStream out = new ByteArrayOutputStream()) {
@@ -106,10 +98,6 @@ public class BaseRsaUtil {
 
     /**
      * 生成秘钥对
-     *
-     * @return
-     * @throws RSAException
-     * @throws Exception
      */
     public static Keys genKeyPair() throws NoSuchAlgorithmException {
         KeyPairGenerator keyPairGen = KeyPairGenerator.getInstance(KEY_ALGORITHM);

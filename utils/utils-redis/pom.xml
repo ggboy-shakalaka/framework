@@ -3,29 +3,21 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <packaging>pom</packaging>
+    <packaging>jar</packaging>
 
     <parent>
         <groupId>cn.zhaizq</groupId>
-        <artifactId>framework</artifactId>
+        <artifactId>framework-utils</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>framework-utils</artifactId>
-
-    <modules>
-        <module>utils-httpclient</module>
-        <module>utils-common</module>
-        <module>utils-jdbc</module>
-        <module>utils-mail</module>
-        <module>utils-redis</module>
-    </modules>
+    <artifactId>framework-utils-redis</artifactId>
 
     <dependencies>
         <dependency>
-            <groupId>cn.zhaizq</groupId>
-            <artifactId>framework-common</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <groupId>redis.clients</groupId>
+            <artifactId>jedis</artifactId>
+            <version>3.2.0</version>
         </dependency>
     </dependencies>
 </project>

@@ -20,7 +20,10 @@ public class RedisWrapper {
     }
 
     public void set(String key, String value) {
-        getJedis().set(key, value);
+        if (value == null)
+            getJedis().del(key);
+        else
+            getJedis().set(key, value);
     }
 
     public String get(String key) {

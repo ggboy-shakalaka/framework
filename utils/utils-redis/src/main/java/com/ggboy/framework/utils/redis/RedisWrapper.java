@@ -14,11 +14,20 @@ public class RedisWrapper {
         return jedisPool.getResource();
     }
 
+    public void set(String key, String value, int seconds) {
+        set(key, value);
+        expire(key, seconds);
+    }
+
     public void set(String key, String value) {
         getJedis().set(key, value);
     }
 
     public String get(String key) {
         return getJedis().get(key);
+    }
+
+    public long expire(String key, int seconds) {
+        return getJedis().expire(key, seconds);
     }
 }

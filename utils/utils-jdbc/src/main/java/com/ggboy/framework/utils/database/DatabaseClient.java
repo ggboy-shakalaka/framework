@@ -1,9 +1,12 @@
 package com.ggboy.framework.utils.database;
 
+import com.ggboy.framework.utils.common.StringUtil;
+
 import java.sql.*;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class DatabaseClient {
     private Connection conn;
@@ -17,8 +20,9 @@ public class DatabaseClient {
     }
 
     public List<Map<String, Object>> query(String sql, Map<String, Object> map) throws SQLException {
-        List<Object> objects = action3(action2(sql, map), map);
-        return query(objects.remove(0).toString(), objects.toArray());
+        sql = SqlParser.replace(sql, map);
+        List<Object> objs = SqlParser.placeholder(sql, map);
+        return query(objs.remove(0).toString(), objs.toArray());
     }
 
     public List<Map<String, Object>> query(String sql, Object... objs) throws SQLException {
@@ -34,13 +38,46 @@ public class DatabaseClient {
         }
     }
 
+    public void insert(String table, Map<String, Object> map) throws SQLException {
+        insert(table, Collections.singletonList(map));
+    }
+
+    // insert into 'table' () values ();
+    public void insert(String table, List<Map<String, Object>> mapList) throws SQLException {
+        conn.setAutoCommit(false);
+        try {
+            String sql = "INSERT INTO %s (%s) VALUES (%s)";
+            for (Map<String, Object> map : mapList) {
+                String columns = StringUtil.toString(", ", map.keySet().toArray());
+                String values = StringUtil.toString(", ", map.keySet().stream().map(v -> "#{" + v + "}").toArray());
+                update(String.format(sql, table, columns, values), map);
+            }
+            conn.commit();
+        } catch (Exception e) {
+            conn.rollback();
+            throw e;
+        }
+    }
+
+    // todo insert into 'table' () values ((), ());
+    public int insertBatch(String table, List<Map<String, Object>> mapList) throws SQLException {
+        Set<String> keySet = new HashSet<>();
+        for (Map<String, Object> map : mapList) {
+            List<String> key = map.entrySet().stream().filter(e -> e.getValue() != null).map(Map.Entry::getKey).collect(Collectors.toList());
+            keySet.addAll(key);
+        }
+        return update(null);
+    }
+
     public int update(String sql, Map<String, Object> map) throws SQLException {
-        List<Object> objs = action3(action2(sql, map), map);
+        sql = SqlParser.replace(sql, map);
+        List<Object> objs = SqlParser.placeholder(sql, map);
         return update(objs.remove(0).toString(), objs.toArray());
     }
 
     public int update(String sql, Object... objs) throws SQLException {
-        normalUpdate: {
+        normalUpdate:
+        {
             if (objs != null && objs.length > 0)
                 break normalUpdate;
             try (Statement statement = conn.createStatement()) {
@@ -53,30 +90,6 @@ public class DatabaseClient {
                 statement.setObject(i + 1, objs[i]);
             return statement.executeUpdate();
         }
-    }
-
-    // todo rename
-    static String action2(String sql, Map<String, Object> map) throws SQLException {
-        for (String content : new HashSet<>(SqlParser.find0(sql))) {
-            String key = SqlParser.getKey(content);
-            if (map == null || !map.containsKey(key))
-                throw new SQLException(String.format("unknown param: '%s'", content));
-            sql = sql.replaceAll(content, map.getOrDefault(key, "").toString());
-        }
-        return sql;
-    }
-
-    // todo rename
-    private static List<Object> action3(String sql, Map<String, Object> map) throws SQLException {
-        LinkedList<Object> list = new LinkedList<>();
-        for (String content : SqlParser.find1(sql)) {
-            String key = SqlParser.getKey(content);
-            if (map == null || !map.containsKey(key))
-                throw new SQLException(String.format("unknown param: '%s'", content));
-            list.add(map.get(key));
-        }
-        list.addFirst(sql.replaceAll("[#]\\{[^}]*}", "?"));
-        return list;
     }
 
     private static Map<String, Object> getLine(ResultSet rs) throws SQLException {
@@ -112,60 +125,80 @@ public class DatabaseClient {
         }
     }
 
-    public final static DatabaseClient buildMysqlClient(String url, int port, String dbName, String name, String pwd) {
-        try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            String jdbcUrl = "jdbc:mysql://" + url + ":" + port + "/" + dbName + "?useUnicode=true&characterEncoding=UTF8&useSSL=false";
-            return buildClient(jdbcUrl, name, pwd);
-        } catch (Exception e) {
-            throw new RuntimeException("client to mysql error", e);
+    public static class Builder {
+        public static DatabaseClient buildMysqlClient(String url, int port, String dbName, String name, String pwd) {
+            try {
+                Class.forName("com.mysql.cj.jdbc.Driver");
+                String jdbcUrl = "jdbc:mysql://" + url + ":" + port + "/" + dbName + "?useUnicode=true&characterEncoding=UTF8&useSSL=false";
+                return buildClient(jdbcUrl, name, pwd);
+            } catch (Exception e) {
+                throw new RuntimeException("client to mysql error", e);
+            }
+        }
+
+        public static DatabaseClient buildSqlServerClient(String url, int port, String dbName, String name, String pwd) {
+            try {
+                Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+                String jdbcUrl = "jdbc:sqlserver://" + url + ":" + port + ";DatabaseName=" + dbName;
+                return buildClient(jdbcUrl, name, pwd);
+            } catch (Exception e) {
+                throw new RuntimeException("client to sqlserver error", e);
+
+            }
+        }
+
+        private static DatabaseClient buildClient(String jdbcUrl, String name, String pwd) throws SQLException {
+            return new DatabaseClient(DriverManager.getConnection(jdbcUrl, name, pwd));
         }
     }
 
-    public final static DatabaseClient buildSqlServerClient(String url, int port, String dbName, String name, String pwd) {
-        try {
-            Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
-            String jdbcUrl = "jdbc:sqlserver://" + url + ":" + port + ";DatabaseName=" + dbName;
-            return buildClient(jdbcUrl, name, pwd);
-        } catch (Exception e) {
-            throw new RuntimeException("client to sqlserver error", e);
+    static class SqlParser {
+        public static String getKey(String str) {
+            if (!str.matches("^[#|$]\\{[^}]*}$"))
+                return str;
+            return str.substring(2, str.length() - 1);
         }
-    }
 
-    private static DatabaseClient buildClient(String jdbcUrl, String name, String pwd) throws SQLException {
-        return new DatabaseClient(DriverManager.getConnection(jdbcUrl, name, pwd));
-    }
-}
+        public static List<String> findDollarSign(String str) {
+            return doFind("[$]\\{[^}]*}", str);
+        }
 
-class SqlParser {
-    private final static String regex0 = "[$]\\{[^}]*}";
-    private final static String regex1 = "[#]\\{[^}]*}";
+        public static List<String> findNumberSign(String str) {
+            return doFind("[#]\\{[^}]*}", str);
+        }
 
-    public final static String getKey(String str) {
-        if (!str.matches("^[#|$]\\{[^}]*}$"))
-            return str;
-        return str.substring(2, str.length() - 1);
-    }
+        public static List<String> doFind(String regex, String str) {
+            Matcher matcher = Pattern.compile(regex).matcher(str);
+            List<String> list = new LinkedList<>();
+            while (matcher.find())
+                list.add(matcher.group());
+            return list;
+        }
 
-    /**
-     * ${***}
-     */
-    public final static List<String> find0(String str) {
-        return doFind(regex0, str);
-    }
+        public static String replace(String sql, Map<String, Object> map) throws SQLException {
+            for (String content : new HashSet<>(SqlParser.findDollarSign(sql))) {
+                String key = SqlParser.getKey(content);
+                if (map == null || !map.containsKey(key))
+                    throw new SQLException(String.format("unknown param: '%s'", content));
+                sql = sql.replaceAll(content, map.getOrDefault(key, "").toString());
+            }
 
-    /**
-     * #{***}
-     */
-    public final static List<String> find1(String str) {
-        return doFind(regex1, str);
-    }
+            return sql;
+        }
 
-    public final static List<String> doFind(String regex, String str) {
-        Matcher matcher = Pattern.compile(regex).matcher(str);
-        List<String> list = new LinkedList<>();
-        while (matcher.find())
-            list.add(matcher.group());
-        return list;
+        public static List<Object> placeholder(String sql, Map<String, Object> map) throws SQLException {
+            LinkedList<Object> list = new LinkedList<>();
+
+            for (String content : SqlParser.findNumberSign(sql)) {
+                String key = SqlParser.getKey(content);
+                Object value = null;
+                if (map == null || (value = map.get(key)) == null)
+                    throw new SQLException(String.format("unknown param: '%s'", content));
+                list.add(value);
+            }
+
+            list.addFirst(sql.replaceAll("[#]\\{[^}]*}", "?"));
+            return list;
+        }
     }
 }

@@ -2,6 +2,7 @@ package com.ggboy.framework.utils.common;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
@@ -16,5 +17,13 @@ public class FileUtil {
                 list.add(line);
             return list;
         }
+    }
+
+    public static void writeLines(String path, String line) throws IOException {
+        FileWriter fileWriter = new FileWriter(path);
+        fileWriter.append('\n');
+        fileWriter.append(line);
+        fileWriter.flush();
+        fileWriter.close();
     }
 }

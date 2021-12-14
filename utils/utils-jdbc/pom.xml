@@ -6,7 +6,7 @@
     <packaging>jar</packaging>
 
     <parent>
-        <groupId>cn.zhaizq</groupId>
+        <groupId>com.zhaizq.framework</groupId>
         <artifactId>framework-utils</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
@@ -15,7 +15,7 @@
 
     <dependencies>
         <dependency>
-            <groupId>cn.zhaizq</groupId>
+            <groupId>com.zhaizq.framework</groupId>
             <artifactId>framework-utils-common</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>

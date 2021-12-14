@@ -1,7 +1,6 @@
 package demo.rsa;
 
-import com.ggboy.framework.utils.common.BaseRsaUtil;
-import com.ggboy.framework.utils.common.StringRsaUtil;
+import com.zhaizq.framework.utils.common.StringRsaUtil;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;

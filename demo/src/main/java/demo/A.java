@@ -3,7 +3,7 @@ package demo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.ggboy.framework.utils.database.DatabaseClient;
+import com.zhaizq.framework.utils.jdbc.DatabaseClient;
 
 import java.io.IOException;
 import java.sql.SQLException;

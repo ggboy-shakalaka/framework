@@ -1,7 +1,7 @@
 package demo;
 
-import com.ggboy.framework.utils.common.FileUtil;
-import com.ggboy.framework.utils.database.DatabaseClient;
+import com.zhaizq.framework.utils.common.FileUtil;
+import com.zhaizq.framework.utils.jdbc.DatabaseClient;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;

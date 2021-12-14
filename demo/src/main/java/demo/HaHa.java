@@ -1,11 +1,6 @@
 package demo;
 
-import com.ggboy.framework.utils.httputil.StringSimpleHttp;
-
-import javax.script.Invocable;
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
+import com.zhaizq.framework.utils.httpclient.StringSimpleHttp;
 
 public class HaHa {
     public static void main(String[] args) throws Exception {

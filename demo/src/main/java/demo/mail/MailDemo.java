@@ -1,7 +1,7 @@
 package demo.mail;
 
-import com.ggboy.framework.utils.mail.EmailContext;
-import com.ggboy.framework.utils.mail.EmailSender;
+import com.zhaizq.framework.utils.mail.EmailContext;
+import com.zhaizq.framework.utils.mail.EmailSender;
 
 import javax.mail.MessagingException;
 import java.io.UnsupportedEncodingException;

@@ -1,8 +1,6 @@
 package demo.httpclient;
 
-import com.ggboy.framework.common.constant.SystemConstant;
-import com.ggboy.framework.utils.httputil.HttpClientFactory;
-import com.ggboy.framework.utils.httputil.StringSimpleHttp;
+import com.zhaizq.framework.utils.httpclient.StringSimpleHttp;
 
 import java.io.IOException;
 import java.math.BigDecimal;

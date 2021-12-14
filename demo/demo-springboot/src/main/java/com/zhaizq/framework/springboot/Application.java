@@ -1,4 +1,4 @@
-package com.zhaizq.framework.spring.web;
+package com.zhaizq.framework.springboot;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

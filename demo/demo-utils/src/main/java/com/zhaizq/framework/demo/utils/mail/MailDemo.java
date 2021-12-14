@@ -1,4 +1,4 @@
-package demo.mail;
+package com.zhaizq.framework.demo.utils.mail;
 
 import com.zhaizq.framework.utils.mail.EmailContext;
 import com.zhaizq.framework.utils.mail.EmailSender;

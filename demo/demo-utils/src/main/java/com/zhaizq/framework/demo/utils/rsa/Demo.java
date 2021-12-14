@@ -1,4 +1,4 @@
-package demo.rsa;
+package com.zhaizq.framework.demo.utils.rsa;
 
 import com.zhaizq.framework.utils.common.StringRsaUtil;
 

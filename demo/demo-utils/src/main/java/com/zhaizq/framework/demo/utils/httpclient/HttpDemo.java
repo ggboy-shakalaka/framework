@@ -1,4 +1,4 @@
-package demo.httpclient;
+package com.zhaizq.framework.demo.utils.httpclient;
 
 import com.zhaizq.framework.utils.httpclient.StringSimpleHttp;
 

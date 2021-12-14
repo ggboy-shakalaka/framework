@@ -1,4 +1,4 @@
-package demo;
+package com.zhaizq.framework.demo.utils;
 
 import com.zhaizq.framework.utils.common.FileUtil;
 import com.zhaizq.framework.utils.jdbc.DatabaseClient;

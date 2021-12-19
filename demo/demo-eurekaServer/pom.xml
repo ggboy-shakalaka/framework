@@ -11,7 +11,7 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>framework-demo-eurekaServer</artifactId>
+    <artifactId>framework-demo-eureka-server</artifactId>
 
     <dependencyManagement>
         <dependencies>

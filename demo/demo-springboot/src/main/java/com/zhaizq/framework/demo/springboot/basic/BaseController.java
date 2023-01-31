@@ -1,4 +1,4 @@
-package com.zhaizq.framework.demo.springboot.controller;
+package com.zhaizq.framework.demo.springboot.basic;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

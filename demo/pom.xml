@@ -16,6 +16,7 @@
     <modules>
         <module>demo-utils</module>
         <module>demo-springboot</module>
+        <module>demo-springboot-admin</module>
         <module>demo-eurekaServer</module>
         <module>demo-eurekaClient</module>
     </modules>
